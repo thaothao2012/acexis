@@ -1,0 +1,122 @@
+<!DOCTYPE <!DOCTYPE html>
+<html>
+
+<head>
+    <title>Caro Game</title>
+    <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+    <div>
+        <label>Rows:</label> <input id="row-input" type="number" value="" />
+        <label>Columns:</label> <input id="col-input" type="number" value="" />
+        <button id="create-caro" name="create-caro">Create</button>
+        <button id="reset-caro" name="reset-caro">Reset</button>
+    </div>
+    <div id="caroGame">
+    </div>
+    <script>
+        let rows;
+        let cols;
+        let arr;
+        let numWin = 3;
+        let canPlayA = true;
+        let canPlayB = false;
+        let winer = '';
+        const cells = document.querySelectorAll('.cell');
+
+        function reset() {
+            createBoard();
+            canPlayA = true;
+            canPlayB = false;
+            arr = Array(Number(rows)).fill(0).map(x => Array(Number(cols)).fill(0));
+        }
+
+        function checkWin() {
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    if (arr[i][j] === 'X') {
+                        if (arr[i][j] === arr[i][j - 1] && arr[i][j] === arr[i][j + 1]) {
+                            winer = 'X';
+                            alert('win x');
+                        } else if (i + 2 < rows && j + 2 < cols && arr[i][j] === arr[i + 1][j + 1] && arr[i][j] === arr[i + 2][j + 2]) {
+                            winer = 'X';
+                            alert('win x');
+                        } else if (arr[i][j] === arr[i + 1][j] && arr[i][j] === arr[i + 2][j]) {
+                            winer = 'X';
+                            alert('win x');
+                        }
+                    } else if (arr[i][j] === 'O') {
+                        if (arr[i][j] === arr[i][j - 1] && arr[i][j] === arr[i][j + 1]) {
+                            winer = 'O';
+                            alert('win o');
+                        } else if (arr[i][j] === arr[i + 1][j + 1] && arr[i][j] === arr[i + 2][j + 2]) {
+                            winer = 'O';
+                            alert('win o');
+                        } else if (arr[i][j] === arr[i + 1][j] && arr[i][j] === arr[i + 2][j]) {
+                            winer = 'O';
+                            alert('win o');
+                        }
+                    }
+                }
+            }
+            if (winer) {
+                document.getElementById("reset-caro").style.display = "inline-block";
+            }
+        }
+
+        function handle(e) {
+            let key = e.target.dataset;
+            console.log('e', e.target.dataset);
+            if (!e.target.innerText) {
+                if (canPlayA) {
+                    e.target.innerText = 'X';
+                    arr[Number(key.i)][Number(key.j)] = 'X';
+                    checkWin();
+                    canPlayA = false;
+                    canPlayB = true;
+                } else if (canPlayB) {
+                    e.target.innerText = 'O';
+                    arr[key.i][key.j] = 'O';
+                    checkWin();
+                    canPlayB = false;
+                    canPlayA = true;
+                }
+                console.log(arr)
+            } else return;
+        }
+
+        function createBoard() {
+            arr = Array(Number(rows)).fill(0).map(x => Array(Number(cols)).fill(0));
+            let result = `<table class="caro-grid"`;
+            for (let i = 0; i < rows; i++) {
+                result += "<tr>";
+                for (let j = 0; j < cols; j++) {
+                    result += `<td class="cell" data-i="${i}" data-j="${j}">`;
+                    result += `</td>`;
+                }
+                result += "</tr>";
+            }
+            result += "</table>";
+            document.getElementById('caroGame').innerHTML = result;
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                cell.addEventListener('click', handle);
+            })
+        }
+
+        function getRow(e) {
+            rows = e.target.value;
+        }
+        function getCol(e) {
+            cols = e.target.value;
+        }
+        document.getElementById('row-input').addEventListener('change', getRow);
+        document.getElementById('col-input').addEventListener('change', getCol);
+        document.getElementById('create-caro').addEventListener('click', createBoard);
+
+        document.querySelector('#reset-caro').addEventListener('click', reset);
+    </script>
+</body>
+
+</html>

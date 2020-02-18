@@ -1,0 +1,22 @@
+
+    body {
+        padding: 3rem;
+    }
+    .cell {
+        width: 32px;
+        height: 32px;
+        border: 1px solid black;
+        text-align: center;
+    }
+
+    .caro-grid {
+        margin-top: 20px;
+    }
+
+    #reset-caro {
+        display: none;
+    }
+
+    input {
+        width: 50px;
+    }

@@ -1,0 +1,194 @@
+<!DOCTYPE <!DOCTYPE html>
+<html>
+
+<head>
+    <title>Snake Game</title>
+</head>
+
+<body>
+    <div class="mode">
+        <button class="modeA" value="modeA">Mode A</button>
+        <button class="modeB" value="modeB">Mode B</button>
+    </div>
+    <canvas id="snackGame" width="400" height="400"></canvas>
+
+    <script>
+        const cvs = document.getElementById("snackGame");
+        const ctx = cvs.getContext('2d');
+        let box = 20;
+        let d;
+        let mode = 'modeB';
+        let snack = [{
+            x: 10 * box,
+            y: 10 * box,
+        }];
+        const btns = document.querySelectorAll('button');
+
+        let food = {
+            x: Math.floor(Math.random() * 19) * box,
+            y: Math.floor(Math.random() * 19) * box
+        }
+
+        //reset 
+        function reset() {
+            d = '';
+            mode = 'modeB';
+            snack = [{
+                x: 10 * box,
+                y: 10 * box,
+            }];
+        }
+
+        //loadFood
+        let foodImage = new Image();
+        foodImage.src = "./food.png";
+
+        //eatFood
+        function eatFood() {
+            if (snack[0].x === food.x && snack[0].y === food.y) {
+                snack.unshift(food);
+                food = {
+                    x: Math.floor(Math.random() * 19) * box,
+                    y: Math.floor(Math.random() * 19) * box
+                }
+                console.log(food);
+            }
+        }
+
+        //check mode    
+        function checkMode() {
+            if (mode === "modeA") {
+                endGame();
+                checkHitWallModeA();
+            } else {
+                endGame();
+                checkHitWallModeB();
+            }
+        }
+
+        //mode A
+        function checkHitWallModeA() {
+            for (let i = 0; i < snack.length; i++) {
+                if (snack[i].x < 0 || snack[i].x > 20 * box || snack[i].y < 0 || snack[i].y > 20 * box) {
+                    alert("OVER GAME");
+                    clearInterval(game);
+                    return;
+                }
+            }
+        }
+
+        //mode B
+        function checkHitWallModeB() {
+            for (let i = 0; i < snack.length; i++) {
+                if (snack[i].x < 0) {
+                    snack[i] = { x: 20 * box, y: snack[i].y };
+                }
+                if (snack[i].x > 20 * box) {
+                    snack[i] = { x: 0, y: snack[i].y };
+                }
+                if (snack[i].y < 0) {
+                    snack[i] = { x: snack[i].x, y: 20 * box };
+                }
+                if (snack[i].y > 20 * box) {
+                    snack[i] = { x: snack[i].x, y: 0 };
+                }
+            }
+        }
+
+        //END GAME
+        function endGame() {
+            for (let i = 1; i < snack.length; i++) {
+                if (snack[0].x === snack[i].x && snack[0].y === snack[i].y) {
+                    alert("OVER GAME!");
+                    clearInterval(game);
+                    return;
+                }
+            }
+        }
+
+        //draw all in game
+        function draw() {
+            console.log(mode);
+            let newHead;
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, 400, 400);
+            ctx.drawImage(foodImage, food.x, food.y, box, box)
+            for (let i = 0; i < snack.length; i++) {
+                ctx.fillStyle = "white";
+                ctx.fillRect(snack[i].x, snack[i].y, box, box);
+                ctx.strokeStyle = "black";
+                ctx.strokeRect(snack[i].x, snack[i].y, box, box);
+            }
+            if (d === "Right") {
+                console.log(snack);
+                newHead = {
+                    x: snack[0].x + box,
+                    y: snack[0].y
+                };
+                snack.unshift(newHead);
+                snack.pop()
+                checkMode();
+            } else if (d === "Left") {
+                newHead = {
+                    x: snack[0].x - box,
+                    y: snack[0].y
+                };
+                snack.unshift(newHead);
+                snack.pop();
+                checkMode();
+            } else if (d === "Up") {
+                newHead = {
+                    x: snack[0].x,
+                    y: snack[0].y - box
+                };
+                snack.unshift(newHead);
+                snack.pop();
+                checkMode();
+            } else if (d === "Down") {
+                newHead = {
+                    x: snack[0].x,
+                    y: snack[0].y + box
+                };
+                snack.unshift(newHead);
+                snack.pop();
+                checkMode();
+            }
+            eatFood();
+        }
+
+        //set direction base on keycode
+        function handleDirection(e) {
+            if (e.keyCode === 37 && d !== "Right") {
+                d = "Left";
+            } else if (e.keyCode === 38 && d !== "Down") {
+                d = "Up";
+            } else if (e.keyCode === 39 && d !== "Left") {
+                d = "Right";
+            } else if (e.keyCode === 40 && d !== "Up") {
+                d = "Down";
+            }
+        }
+
+        function setMode() {
+            reset();
+            mode = this.value;
+        }
+
+        document.addEventListener('keydown', handleDirection);
+        btns.forEach(btn => btn.addEventListener('click', setMode));
+        let game = setInterval(draw, 1000);
+
+    </script>
+</body>
+
+</html>
+<style>
+    html,
+    body {
+        text-align: center;
+    }
+
+    .mode {
+        margin: 30px auto;
+    }
+</style>
